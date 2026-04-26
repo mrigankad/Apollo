@@ -1,4 +1,4 @@
-from open_mythos.main import (
+from apollo.main import (
     ACTHalting,
     Expert,
     GQAttention,
@@ -7,7 +7,7 @@ from open_mythos.main import (
     MLAttention,
     MoEFFN,
     MythosConfig,
-    OpenMythos,
+    Apollo,
     RecurrentBlock,
     RMSNorm,
     TransformerBlock,
@@ -15,8 +15,8 @@ from open_mythos.main import (
     loop_index_embedding,
     precompute_rope_freqs,
 )
-from open_mythos.tokenizer import MythosTokenizer
-from open_mythos.variants import (
+from apollo.tokenizer import MythosTokenizer
+from apollo.variants import (
     mythos_1b,
     mythos_1t,
     mythos_3b,
@@ -38,7 +38,7 @@ __all__ = [
     "LTIInjection",
     "ACTHalting",
     "RecurrentBlock",
-    "OpenMythos",
+    "Apollo",
     "precompute_rope_freqs",
     "apply_rope",
     "loop_index_embedding",

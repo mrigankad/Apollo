@@ -19,7 +19,7 @@ databases
 static/generated
 conversations/
 sjfdkdjad9si_dsksdjks
-next_swarms_update.txt
+
 .pytest_cache
 infra.md
 runs
@@ -77,7 +77,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 .grit
-swarm-worker-01_state.json
+
 error.txt
 Devin Worker 2_state.json
 # C extensions

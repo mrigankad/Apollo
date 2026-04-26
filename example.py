@@ -1,5 +1,5 @@
 import torch
-from open_mythos.main import OpenMythos, MythosConfig
+from apollo.main import Apollo, MythosConfig
 
 
 attn_type = "mla"  # or "gqa"
@@ -33,7 +33,7 @@ else:
         v_head_dim=16,
     )
 
-model = OpenMythos(cfg)
+model = Apollo(cfg)
 total = sum(p.numel() for p in model.parameters())
 print(f"\n[{attn_type.upper()}] Parameters: {total:,}")
 

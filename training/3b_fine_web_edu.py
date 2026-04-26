@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-OpenMythos pretraining on FineWeb-Edu with FSDP + AdamW.
+Apollo pretraining on FineWeb-Edu with FSDP + AdamW.
 
 Single GPU:
     python training/3b_fine_web_edu.py
@@ -29,10 +29,10 @@ from contextlib import nullcontext
 
 from datasets import load_dataset
 
-from open_mythos import OpenMythos
-from open_mythos.main import TransformerBlock, RecurrentBlock
-from open_mythos.variants import mythos_3b
-from open_mythos.tokenizer import MythosTokenizer
+from apollo import Apollo
+from apollo.main import TransformerBlock, RecurrentBlock
+from apollo.variants import mythos_3b
+from apollo.tokenizer import MythosTokenizer
 
 
 # ---------------------------------------------------------------------------
@@ -322,7 +322,7 @@ def main():
     Lifecycle:
         1. Initialize torch.distributed (NCCL) if launched under torchrun.
         2. Build tokenizer → derive vocab_size.
-        3. Construct OpenMythos with the 3B variant config.
+        3. Construct Apollo with the 3B variant config.
         4. Wrap in FSDP with FULL_SHARD + bf16/fp16 mixed precision (multi-GPU)
            or move to device + autocast (single-GPU).
         5. Build fused AdamW on (possibly sharded) parameters.
@@ -401,7 +401,7 @@ def main():
     bf16_ok = torch.cuda.is_available() and torch.cuda.is_bf16_supported()
     amp_dtype = torch.bfloat16 if bf16_ok else torch.float16
 
-    model = OpenMythos(cfg)
+    model = Apollo(cfg)
 
     if ddp:
         mp_policy = MixedPrecision(

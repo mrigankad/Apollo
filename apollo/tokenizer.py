@@ -5,7 +5,7 @@ DEFAULT_MODEL_ID = "openai/gpt-oss-20b"
 
 class MythosTokenizer:
     """
-    HuggingFace tokenizer wrapper for OpenMythos.
+    HuggingFace tokenizer wrapper for Apollo.
 
     Args:
         model_id (str): The HuggingFace model ID or path to use with AutoTokenizer.

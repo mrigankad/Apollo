@@ -1,6 +1,6 @@
 import torch
 import pytest
-from open_mythos.main import (
+from apollo.main import (
     ACTHalting,
     Expert,
     GQAttention,
@@ -9,7 +9,7 @@ from open_mythos.main import (
     MLAttention,
     MoEFFN,
     MythosConfig,
-    OpenMythos,
+    Apollo,
     RecurrentBlock,
     RMSNorm,
     TransformerBlock,
@@ -544,14 +544,14 @@ class TestRecurrentBlock:
 
 
 # ---------------------------------------------------------------------------
-# OpenMythos — GQA mode
+# Apollo — GQA mode
 # ---------------------------------------------------------------------------
 
 
-class TestOpenMythosGQA:
+class TestApolloGQA:
     def setup_method(self):
         self.cfg = gqa_cfg()
-        self.model = OpenMythos(self.cfg)
+        self.model = Apollo(self.cfg)
         self.ids = torch.randint(0, self.cfg.vocab_size, (B, T))
 
     def test_forward_shape(self):
@@ -597,14 +597,14 @@ class TestOpenMythosGQA:
 
 
 # ---------------------------------------------------------------------------
-# OpenMythos — MLA mode
+# Apollo — MLA mode
 # ---------------------------------------------------------------------------
 
 
-class TestOpenMythosMLА:
+class TestApolloMLА:
     def setup_method(self):
         self.cfg = mla_cfg()
-        self.model = OpenMythos(self.cfg)
+        self.model = Apollo(self.cfg)
         self.ids = torch.randint(0, self.cfg.vocab_size, (B, T))
 
     def test_forward_shape(self):
@@ -644,8 +644,8 @@ class TestAttnTypeSwap:
         cfg_gqa = gqa_cfg()
         cfg_mla = mla_cfg()
         ids = torch.randint(0, cfg_gqa.vocab_size, (B, T))
-        logits_gqa = OpenMythos(cfg_gqa)(ids)
-        logits_mla = OpenMythos(cfg_mla)(ids)
+        logits_gqa = Apollo(cfg_gqa)(ids)
+        logits_mla = Apollo(cfg_mla)(ids)
         # different architectures, different params → outputs must differ
         assert not torch.allclose(logits_gqa, logits_mla)
 
@@ -653,7 +653,7 @@ class TestAttnTypeSwap:
         ids = torch.randint(0, 200, (B, T))
         for attn_type in ("gqa", "mla"):
             cfg = gqa_cfg(attn_type=attn_type)
-            logits = OpenMythos(cfg)(ids)
+            logits = Apollo(cfg)(ids)
             assert logits.shape == (B, T, cfg.vocab_size)
 
     def test_mla_fewer_kv_cache_bytes(self):
@@ -661,8 +661,8 @@ class TestAttnTypeSwap:
         ids = torch.randint(0, 200, (1, T))
         cache_gqa, cache_mla = {}, {}
         with torch.no_grad():
-            OpenMythos(gqa_cfg())(ids, kv_cache=cache_gqa)
-            OpenMythos(mla_cfg())(ids, kv_cache=cache_mla)
+            Apollo(gqa_cfg())(ids, kv_cache=cache_gqa)
+            Apollo(mla_cfg())(ids, kv_cache=cache_mla)
 
         def cache_bytes(cache):
             return sum(

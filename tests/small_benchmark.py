@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Side-by-side training + benchmark of OpenMythos vs. a vanilla transformer on a
+Side-by-side training + benchmark of Apollo vs. a vanilla transformer on a
 small HuggingFace dataset (TinyStories by default, streamed).
 
 Both models share the same tiny MLA config and see the exact same batches in
@@ -16,7 +16,7 @@ What the script measures
 ------------------------
 1. Per-step training loss + tokens/sec for both models, fed identical batches.
 2. Periodic held-out eval loss on a separate dataset split (--eval-every).
-3. Depth-extrapolation sweep at the end: OpenMythos is trained at
+3. Depth-extrapolation sweep at the end: Apollo is trained at
    cfg.max_loop_iters, then evaluated at n_loops in --depth-sweep
    (default 1,2,4,8,16). This is the experiment the recurrent-depth
    architecture is designed to win — eval loss should keep dropping past
@@ -55,8 +55,8 @@ from datasets import load_dataset
 from torch.utils.data import DataLoader, Dataset
 from transformers import AutoTokenizer
 
-from open_mythos import MythosConfig, OpenMythos
-from open_mythos.main import (
+from apollo import MythosConfig, Apollo
+from apollo.main import (
     RMSNorm,
     TransformerBlock,
     precompute_rope_freqs,
@@ -71,7 +71,7 @@ from open_mythos.main import (
 class BaselineTransformer(nn.Module):
     """Vanilla decoder-only transformer with dense SwiGLU FFNs.
 
-    Reuses OpenMythos's TransformerBlock (attention + FFN kernels are identical)
+    Reuses Apollo's TransformerBlock (attention + FFN kernels are identical)
     so any measured delta reflects the looped recurrent-depth architecture, not
     kernel differences. Supports both attn_type="gqa" and "mla".
     """
@@ -241,7 +241,7 @@ def evaluate(
 ) -> float:
     """Mean cross-entropy over (up to `max_batches`) of the loader.
 
-    `n_loops` is only forwarded to OpenMythos; for any other module the kwarg
+    `n_loops` is only forwarded to Apollo; for any other module the kwarg
     is dropped, so the same function benchmarks baseline and mythos uniformly.
     """
     model.eval()
@@ -252,7 +252,7 @@ def evaluate(
             break
         x = x.to(device, non_blocking=True)
         y = y.to(device, non_blocking=True)
-        if isinstance(model, OpenMythos):
+        if isinstance(model, Apollo):
             logits = model(x, n_loops=n_loops)
         else:
             logits = model(x)
@@ -358,7 +358,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--depth-sweep",
         default="1,2,4,8,16",
-        help="comma-separated n_loops values for OpenMythos depth-extrapolation eval",
+        help="comma-separated n_loops values for Apollo depth-extrapolation eval",
     )
     p.add_argument("--seed", type=int, default=0)
     p.add_argument(
@@ -421,7 +421,7 @@ def main() -> None:
     cfg = build_tiny_cfg(vocab_size, args.seq_len)
 
     torch.manual_seed(args.seed)
-    mythos = OpenMythos(cfg).to(device)
+    mythos = Apollo(cfg).to(device)
 
     # Parameter-matched depth: prelude + one unique recurrent block + coda.
     baseline_layers = cfg.prelude_layers + 1 + cfg.coda_layers
@@ -430,7 +430,7 @@ def main() -> None:
 
     n_m, n_b = count_params(mythos), count_params(baseline)
     print(
-        f"[setup] OpenMythos params  = {fmt_count(n_m)}  ({n_m:,})\n"
+        f"[setup] Apollo params  = {fmt_count(n_m)}  ({n_m:,})\n"
         f"[setup] Baseline  params  = {fmt_count(n_b)}  ({n_b:,})  "
         f"[{baseline_layers} layers]"
     )
@@ -504,7 +504,7 @@ def main() -> None:
     # ------------------------------------------------------------------
     bar = "=" * 70
     print(f"\n{bar}\nSummary ({args.steps} steps, wall clock {total_wall:.1f}s)\n{bar}")
-    print(f"  {'':<24} {'OpenMythos':>16}   {'Baseline':>16}")
+    print(f"  {'':<24} {'Apollo':>16}   {'Baseline':>16}")
     print(f"  {'params':<24} {fmt_count(n_m):>16}   {fmt_count(n_b):>16}")
     print(
         f"  {'initial train (first 10)':<24} "
@@ -532,7 +532,7 @@ def main() -> None:
     )
 
     # ------------------------------------------------------------------
-    # Depth extrapolation: OpenMythos eval loss as a function of n_loops.
+    # Depth extrapolation: Apollo eval loss as a function of n_loops.
     # Trained at cfg.max_loop_iters; we run inference with a sweep to see
     # whether additional loops keep improving (depth extrapolation) or the
     # model collapses outside the trained regime.
@@ -548,7 +548,7 @@ def main() -> None:
             (nl, evaluate(mythos, eval_loader, device, vocab_size, n_loops=nl))
         )
     trained_loss = next((loss for nl, loss in sweep if nl == cfg.max_loop_iters), None)
-    print(f"  OpenMythos (trained at n_loops={cfg.max_loop_iters}):")
+    print(f"  Apollo (trained at n_loops={cfg.max_loop_iters}):")
     print(f"    {'n_loops':>8}  {'eval loss':>10}  {'Δ vs trained':>14}")
     for nl, loss in sweep:
         if trained_loss is None or nl == cfg.max_loop_iters:

@@ -1,10 +1,10 @@
 """
-OpenMythos vs. vanilla GQA+MoE transformer benchmark.
+Apollo vs. vanilla GQA+MoE transformer benchmark.
 
-Compares OpenMythos (Prelude + looped Recurrent Block + Coda with ACT halting,
+Compares Apollo (Prelude + looped Recurrent Block + Coda with ACT halting,
 LTI-stable injection, LoRA depth adapter) against a parameter-matched vanilla
 transformer built from the same GQAttention + MoEFFN building blocks stacked
-non-recurrently. The baseline reuses OpenMythos primitives so the comparison
+non-recurrently. The baseline reuses Apollo primitives so the comparison
 isolates the recurrent-depth architecture, not the kernels.
 
 Metrics reported:
@@ -12,7 +12,7 @@ Metrics reported:
     - Prefill latency + throughput at several sequence lengths
     - Decode (autoregressive step) latency with KV cache
     - Peak memory (CUDA only)
-    - OpenMythos depth-scaling sweep: latency vs. n_loops
+    - Apollo depth-scaling sweep: latency vs. n_loops
 
 Run:
     python benchmarks/bench_vs_transformer.py                     # small CPU/GPU smoke test
@@ -32,8 +32,8 @@ from typing import Optional
 import torch
 import torch.nn as nn
 
-from open_mythos import MythosConfig, OpenMythos, mythos_1b
-from open_mythos.main import (
+from apollo import MythosConfig, Apollo, mythos_1b
+from apollo.main import (
     RMSNorm,
     TransformerBlock,
     precompute_rope_freqs,
@@ -49,7 +49,7 @@ class BaselineTransformer(nn.Module):
     """
     Vanilla decoder-only transformer with GQA attention and MoE FFNs, stacked
     non-recurrently. Shares TransformerBlock / GQAttention / MoEFFN kernels
-    with OpenMythos so any speed delta is attributable to the recurrent-depth
+    with Apollo so any speed delta is attributable to the recurrent-depth
     architecture rather than the underlying attention/FFN implementation.
     """
 
@@ -176,7 +176,7 @@ def bench_prefill(
     """Returns (median_seconds, tokens_per_sec)."""
     ids = torch.randint(0, vocab_size, (batch, seq_len), device=device)
 
-    if isinstance(model, OpenMythos):
+    if isinstance(model, Apollo):
 
         def run() -> None:
             with torch.no_grad():
@@ -211,13 +211,13 @@ def bench_decode(
     def one_run() -> None:
         kv_cache: dict = {}
         with torch.no_grad():
-            if isinstance(model, OpenMythos):
+            if isinstance(model, Apollo):
                 model(prompt, n_loops=n_loops, kv_cache=kv_cache, start_pos=0)
             else:
                 model(prompt, kv_cache=kv_cache, start_pos=0)
             for i in range(decode_steps):
                 next_tok = torch.randint(0, vocab_size, (batch, 1), device=device)
-                if isinstance(model, OpenMythos):
+                if isinstance(model, Apollo):
                     model(
                         next_tok,
                         n_loops=n_loops,
@@ -317,7 +317,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--n-loops",
         default="1,4,8",
-        help="comma-separated loop counts to sweep (OpenMythos only)",
+        help="comma-separated loop counts to sweep (Apollo only)",
     )
     p.add_argument(
         "--decode-steps",
@@ -360,11 +360,11 @@ def main() -> None:
     )
 
     # Build models. Baseline depth = prelude + 1 (one unique recurrent block) + coda
-    # to match the unique-parameter depth of OpenMythos (parameter-matched baseline).
+    # to match the unique-parameter depth of Apollo (parameter-matched baseline).
     baseline_n_layers = cfg.prelude_layers + 1 + cfg.coda_layers
 
     torch.manual_seed(0)
-    mythos = OpenMythos(cfg).to(device=device, dtype=dtype).eval()
+    mythos = Apollo(cfg).to(device=device, dtype=dtype).eval()
     torch.manual_seed(0)
     baseline = (
         BaselineTransformer(cfg, n_layers=baseline_n_layers)
@@ -378,7 +378,7 @@ def main() -> None:
         "Parameters (block-matched: baseline depth = prelude + 1 recurrent + coda)"
     )
     print(
-        f"  OpenMythos : total={fmt_count(m_params.total):>10}   "
+        f"  Apollo : total={fmt_count(m_params.total):>10}   "
         f"active/tok≈{fmt_count(m_params.moe_active_est):>10}"
     )
     print(
@@ -415,7 +415,7 @@ def main() -> None:
             )
             mem = peak_mem_mb(device)
             print(
-                f"  {'OpenMythos (loops=' + str(nl) + ')':<26} {seq_len:>6} "
+                f"  {'Apollo (loops=' + str(nl) + ')':<26} {seq_len:>6} "
                 f"{secs*1000:>9.2f}ms {tps:>12,.0f} {mem:>10.1f}"
             )
 
@@ -449,13 +449,13 @@ def main() -> None:
             n_loops=nl,
         )
         print(
-            f"  {'OpenMythos (loops=' + str(nl) + ')':<26} "
+            f"  {'Apollo (loops=' + str(nl) + ')':<26} "
             f"{per_step*1000:>10.2f}ms {tps:>14,.1f}"
         )
 
     # ---- Depth scaling ----
     print_header(
-        "OpenMythos depth scaling (fixed seq={}, batch={})".format(
+        "Apollo depth scaling (fixed seq={}, batch={})".format(
             seq_lens[0], args.batch
         )
     )

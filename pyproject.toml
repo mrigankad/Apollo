@@ -4,15 +4,15 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry]
-name = "open-mythos"
+name = "apollo"
 version = "0.5.0"
-description = "OpenMythos — open-source theoretical reconstruction of the Claude Mythos Recurrent-Depth Transformer architecture"
+description = "Apollo — open-source theoretical reconstruction of the Claude Mythos Recurrent-Depth Transformer architecture"
 license = "MIT"
-authors = ["Kye Gomez <kye@swarms.world>"]
-homepage = "https://github.com/The-Swarm-Corporation/OpenMythos"
-documentation = "https://github.com/The-Swarm-Corporation/OpenMythos/blob/main/docs/open_mythos.md"
+authors = ["mrigankad <mriganka.uiux@gmail.com>"]
+homepage = "https://github.com/mrigankad/Apollo"
+documentation = "https://github.com/mrigankad/Apollo/blob/main/docs/apollo.md"
 readme = "README.md"
-repository = "https://github.com/The-Swarm-Corporation/OpenMythos"
+repository = "https://github.com/mrigankad/Apollo"
 keywords = [
     "artificial intelligence",
     "deep learning",

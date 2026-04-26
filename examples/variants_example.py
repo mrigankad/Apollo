@@ -1,10 +1,10 @@
-from open_mythos import (
+from apollo import (
     mythos_1b,
-    OpenMythos,
+    Apollo,
 )
 
 cfg = mythos_1b()
-model = OpenMythos(cfg)
+model = Apollo(cfg)
 
 total = sum(p.numel() for p in model.parameters())
 print(f"Parameters: {total:,}")

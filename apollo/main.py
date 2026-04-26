@@ -16,7 +16,7 @@ except ImportError:
 @dataclass
 class MythosConfig:
     """
-    Hyperparameter configuration for OpenMythos.
+    Hyperparameter configuration for Apollo.
 
     Core:
         vocab_size      -- token vocabulary size
@@ -787,7 +787,7 @@ class ACTHalting(nn.Module):
 
 class RecurrentBlock(nn.Module):
     """
-    The core recurrent block of OpenMythos — a single TransformerBlock looped T times.
+    The core recurrent block of Apollo — a single TransformerBlock looped T times.
 
     At each loop iteration t, the hidden state h is updated via:
         1. loop_index_embedding: inject sinusoidal loop-index signal into h
@@ -896,9 +896,9 @@ class RecurrentBlock(nn.Module):
 # ---------------------------------------------------------------------------
 
 
-class OpenMythos(nn.Module):
+class Apollo(nn.Module):
     """
-    OpenMythos — Recurrent-Depth Transformer language model.
+    Apollo — Recurrent-Depth Transformer language model.
 
     Implements the hypothesized Claude Mythos architecture as a Recurrent-Depth
     Transformer (RDT). The model divides computation into three functional blocks:

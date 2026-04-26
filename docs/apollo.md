@@ -1,13 +1,13 @@
-# `OpenMythos` — Class Reference
+# `Apollo` — Class Reference
 
-**Module:** `open_mythos.main`  
+**Module:** `apollo.main`  
 **Base class:** `torch.nn.Module`
 
 ---
 
 ## Overview
 
-`OpenMythos` is the top-level model class implementing the Recurrent-Depth Transformer (RDT) architecture described in [the OpenMythos hypothesis](../README.md). It assembles three functional stages — **Prelude**, **Recurrent Block**, and **Coda** — into a complete autoregressive language model.
+`Apollo` is the top-level model class implementing the Recurrent-Depth Transformer (RDT) architecture described in [the Apollo hypothesis](../README.md). It assembles three functional stages — **Prelude**, **Recurrent Block**, and **Coda** — into a complete autoregressive language model.
 
 ```
 Input token IDs  (B, T)
@@ -26,7 +26,7 @@ Input token IDs  (B, T)
 Output logits  (B, T, vocab_size)
 ```
 
-Every architectural choice in `OpenMythos` can be configured through a single [`MythosConfig`](#mythosconfig) dataclass passed at construction.
+Every architectural choice in `Apollo` can be configured through a single [`MythosConfig`](#mythosconfig) dataclass passed at construction.
 
 ---
 
@@ -37,7 +37,7 @@ Every architectural choice in `OpenMythos` can be configured through a single [`
 class MythosConfig
 ```
 
-All hyperparameters for the model are stored in this single frozen-style dataclass. Pass an instance to `OpenMythos.__init__`.
+All hyperparameters for the model are stored in this single frozen-style dataclass. Pass an instance to `Apollo.__init__`.
 
 ### Core fields
 
@@ -93,7 +93,7 @@ Approximately `n_experts_per_tok / n_experts = 6.25%` of routed expert parameter
 ## Constructor
 
 ```python
-OpenMythos(cfg: MythosConfig)
+Apollo(cfg: MythosConfig)
 ```
 
 Builds all sub-modules, precomputes RoPE frequency buffers, and runs weight initialization.
@@ -112,7 +112,7 @@ Builds all sub-modules, precomputes RoPE frequency buffers, and runs weight init
 **Example:**
 
 ```python
-from open_mythos.main import OpenMythos, MythosConfig
+from apollo.main import Apollo, MythosConfig
 
 cfg = MythosConfig(
     vocab_size=32000,
@@ -122,7 +122,7 @@ cfg = MythosConfig(
     max_loop_iters=16,
     attn_type="mla",
 )
-model = OpenMythos(cfg)
+model = Apollo(cfg)
 print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}")
 ```
 
@@ -182,9 +182,9 @@ Single forward pass through the full Prelude → Recurrent Block → Coda pipeli
 
 ```python
 import torch
-from open_mythos.main import OpenMythos, MythosConfig
+from apollo.main import Apollo, MythosConfig
 
-model = OpenMythos(MythosConfig()).cuda()
+model = Apollo(MythosConfig()).cuda()
 optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4)
 
 input_ids = torch.randint(0, 32000, (2, 512)).cuda()
@@ -263,9 +263,9 @@ next_tok = multinomial(probs, num_samples=1)
 
 ```python
 import torch
-from open_mythos.main import OpenMythos, MythosConfig
+from apollo.main import Apollo, MythosConfig
 
-model = OpenMythos(MythosConfig()).eval()
+model = Apollo(MythosConfig()).eval()
 
 # Tokenized prompt (use your tokenizer of choice)
 prompt = torch.tensor([[1, 450, 3118, 310, 278]])   # (1, 5)
@@ -284,7 +284,7 @@ output = model.generate(
 
 ## Internal Components
 
-The following sub-modules are assembled inside `OpenMythos`. They are not typically called directly but understanding them clarifies the model's behavior.
+The following sub-modules are assembled inside `Apollo`. They are not typically called directly but understanding them clarifies the model's behavior.
 
 ### `RecurrentBlock`
 
@@ -399,7 +399,7 @@ Injects a sinusoidal loop-index signal into the first `loop_dim` channels of the
 The default `MythosConfig()` targets a mid-scale research model. Below is a minimal configuration for quick experimentation:
 
 ```python
-from open_mythos.main import OpenMythos, MythosConfig
+from apollo.main import Apollo, MythosConfig
 
 # Minimal config for fast iteration / unit testing
 small_cfg = MythosConfig(
@@ -418,7 +418,7 @@ small_cfg = MythosConfig(
     expert_dim=64,
     lora_rank=4,
 )
-model = OpenMythos(small_cfg)
+model = Apollo(small_cfg)
 ```
 
 And a production-oriented MLA configuration matching the default hyperparameters:
@@ -448,7 +448,7 @@ prod_cfg = MythosConfig(
     rope_theta=500000.0,
     lora_rank=16,
 )
-model = OpenMythos(prod_cfg)
+model = Apollo(prod_cfg)
 ```
 
 ---

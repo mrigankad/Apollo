@@ -1,5 +1,5 @@
 import torch
-from open_mythos.moda import MoDAConfig, MoDAModel
+from apollo.moda import MoDAConfig, MoDAModel
 
 
 # ---------------------------------------------------------------------------

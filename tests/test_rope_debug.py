@@ -4,7 +4,7 @@ so you can visually verify correctness of precompute_rope_freqs and apply_rope.
 """
 
 import torch
-from open_mythos.main import apply_rope, precompute_rope_freqs
+from apollo.main import apply_rope, precompute_rope_freqs
 
 DIM = 8
 MAX_LEN = 6

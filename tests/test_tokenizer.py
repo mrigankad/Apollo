@@ -1,5 +1,5 @@
 import pytest
-from open_mythos.tokenizer import MythosTokenizer
+from apollo.tokenizer import MythosTokenizer
 
 
 @pytest.fixture(scope="module")
@@ -52,7 +52,7 @@ def test_roundtrip(tokenizer):
 
 
 def test_encode_long_text(tokenizer):
-    text = "OpenMythos is a recurrent depth transformer. " * 100
+    text = "Apollo is a recurrent depth transformer. " * 100
     ids = tokenizer.encode(text)
     print(f"Long text ({len(text)} chars) → {len(ids)} tokens")
     assert len(ids) > 100

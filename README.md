@@ -1,4 +1,4 @@
-# OpenMythos
+# Apollo
 
 <p align="left">
   <a href="https://pypi.org/project/open-mythos/" target="_blank">
@@ -7,12 +7,12 @@
       <img alt="Version" src="https://img.shields.io/pypi/v/open-mythos?style=for-the-badge&color=3670A0">
     </picture>
   </a>
-  <a href="https://twitter.com/kyegomezb/">
-    <picture>
-      <source srcset="https://img.shields.io/badge/Twitter-Follow-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" media="(prefers-color-scheme: dark)">
-      <img src="https://img.shields.io/badge/Twitter-Follow-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter">
-    </picture>
-  </a>
+<a href="https://github.com/mrigankad">
+     <picture>
+       <source srcset="https://img.shields.io/badge/GitHub-Follow-1DA1F2?style=for-the-badge&logo=github&logoColor=white" media="(prefers-color-scheme: dark)">
+       <img src="https://img.shields.io/badge/GitHub-Follow-1DA1F2?style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
+     </picture>
+   </a>
   <a href="https://discord.gg/3keGBK9Pvr" target="_blank">
     <picture>
       <source srcset="https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord&logoColor=white" media="(prefers-color-scheme: dark)">
@@ -27,9 +27,9 @@
   </a>
 </p>
 
-> **Disclaimer:** OpenMythos is an independent, community-driven theoretical reconstruction based solely on publicly available research and speculation. It is not affiliated with, endorsed by, or connected to Anthropic or any of their proprietary systems.
+> **Disclaimer:** Apollo is an independent, community-driven theoretical reconstruction based solely on publicly available research and speculation. It is not affiliated with, endorsed by, or connected to Anthropic or any of their proprietary systems.
 
-OpenMythos is an open-source, theoretical implementation of the Claude Mythos model. It implements a Recurrent-Depth Transformer (RDT) with three stages: **Prelude** (transformer blocks), a looped **Recurrent Block** (up to `max_loop_iters`), and a final **Coda**. Attention is switchable between MLA and GQA, and the feed-forward uses a sparse MoE with routed and shared experts ideal for exploring compute-adaptive, depth-variable reasoning.
+Apollo is an open-source, theoretical implementation of the Claude Mythos model. It implements a Recurrent-Depth Transformer (RDT) with three stages: **Prelude** (transformer blocks), a looped **Recurrent Block** (up to `max_loop_iters`), and a final **Coda**. Attention is switchable between MLA and GQA, and the feed-forward uses a sparse MoE with routed and shared experts ideal for exploring compute-adaptive, depth-variable reasoning.
 
 
 ## Installation
@@ -51,7 +51,7 @@ pip install open-mythos[flash]
 ```python
 
 import torch
-from open_mythos.main import OpenMythos, MythosConfig
+from apollo.main import Apollo, MythosConfig
 
 
 attn_type = "mla"  # or "gqa"
@@ -85,7 +85,7 @@ else:
         v_head_dim=16,
     )
 
-model = OpenMythos(cfg)
+model = Apollo(cfg)
 total = sum(p.numel() for p in model.parameters())
 print(f"\n[{attn_type.upper()}] Parameters: {total:,}")
 
@@ -110,7 +110,7 @@ print(
 Pre-configured scales from 1B to 1T parameters:
 
 ```python
-from open_mythos import (
+from apollo import (
     mythos_1b,
     mythos_3b,
     mythos_10b,
@@ -118,11 +118,11 @@ from open_mythos import (
     mythos_100b,
     mythos_500b,
     mythos_1t,
-    OpenMythos,
+    Apollo,
 )
 
 cfg = mythos_7b()  # returns a MythosConfig
-model = OpenMythos(cfg)
+model = Apollo(cfg)
 
 total = sum(p.numel() for p in model.parameters())
 print(f"Parameters: {total:,}")
@@ -172,7 +172,7 @@ Key design choices:
 
 | Page | Description |
 |---|---|
-| [`docs/open_mythos.md`](docs/open_mythos.md) | Full API reference for the `OpenMythos` class — constructor, `forward`, `generate`, all sub-modules, configuration reference, and usage examples |
+| [`docs/apollo.md`](docs/apollo.md) | Full API reference for the `Apollo` class — constructor, `forward`, `generate`, all sub-modules, configuration reference, and usage examples |
 | [`docs/datasets.md`](docs/datasets.md) | Recommended training datasets with token budget guidance per model size |
 
 ---
@@ -216,7 +216,7 @@ Where:
 
 The injection of `e` at every step is what prevents the model from drifting — it keeps the original input signal alive throughout the entire recurrence depth.
 
-The full implementation is in [`open_mythos/main.py`](open_mythos/main.py). See the [`OpenMythos` class reference](docs/open_mythos.md) for a detailed API walkthrough, configuration options, and usage examples.
+The full implementation is in [`apollo/main.py`](apollo/main.py). See the [`Apollo` class reference](docs/apollo.md) for a detailed API walkthrough, configuration options, and usage examples.
 
 ### Attention Implementations
 
@@ -419,14 +419,14 @@ Theoretical analysis suggests 2-3x improvements in inference throughput. For a d
 
 ## Citation
 
-If you use OpenMythos in your research or build on this work, please cite:
+If you use Apollo in your research or build on this work, please cite:
 
 ```bibtex
-@software{gomez2026openmythos,
-  author    = {Kye Gomez},
-  title     = {OpenMythos: A Theoretical Reconstruction of the Claude Mythos Architecture},
+@software{mrigankad2026apollo,
+  author    = {mrigankad},
+  title     = {Apollo: A Theoretical Reconstruction of the Claude Mythos Architecture},
   year      = {2026},
-  url       = {https://github.com/kyegomez/OpenMythos},
+  url       = {https://github.com/mrigankad/Apollo},
   note      = {Recurrent-Depth Transformer with MoE, MLA, LTI-stable injection, and ACT halting}
 }
 ```
@@ -435,4 +435,4 @@ If you use OpenMythos in your research or build on this work, please cite:
 
 ## License
 
-MIT License — Copyright (c) 2026 Kye Gomez. See [`LICENSE`](LICENSE) for the full text.
+MIT License — Copyright (c) 2026 mrigankad. See [`LICENSE`](LICENSE) for the full text.

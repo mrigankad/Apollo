@@ -40,4 +40,4 @@
 | 10B | ~200B tokens | ~100–150B tokens |
 | 50B+ | ~1T+ tokens | ~500B+ tokens |
 
-The looped architecture is more sample-efficient than a standard transformer — same validation loss is reachable with fewer tokens due to faster convergence. The "recommended (looped)" column reflects this and is based on the Tiny Shakespeare result where OpenMythos reached equivalent loss ~2.5× faster than nanoGPT.
+The looped architecture is more sample-efficient than a standard transformer — same validation loss is reachable with fewer tokens due to faster convergence. The "recommended (looped)" column reflects this and is based on the Tiny Shakespeare result where Apollo reached equivalent loss ~2.5× faster than nanoGPT.
